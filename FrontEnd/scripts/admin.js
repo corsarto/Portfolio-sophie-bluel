@@ -90,11 +90,59 @@ function containerModal(data) {
         const trashIcon = document.createElement('i');
         trashIcon.classList.add('fas', 'fa-trash-can', 'icon-overlay');
         trashIcon.setAttribute('aria-hidden', 'false');
+        trashIcon.dataset.id = work.id;
+
+        trashIcon.addEventListener('click', deleteContent);
 
 
         figure.appendChild(img);
         figure.appendChild(trashIcon);
         pictureModal.appendChild(figure);
+
+        async function deleteContent(event) {
+            const id = event.target.dataset.id;
+            const token = localStorage.getItem("token");
+    
+            if (!token) {
+                console.error("Token manquant, impossible de supprimer ce projet.");
+                return;
+            }
+    
+            if(!id) {
+                console.log("L'id n'a pas été trouver, suppression annulée.")
+                return;
+            }
+    
+            const headers = {
+                'Authorization': 'Bearer ' + token,
+            }
+    
+            try{
+                const resp = await fetch(urlAdmin + `works/${id}`,{
+                    method: 'DELETE',
+                    headers : headers,
+                    body : null,
+                });
+    
+                if(!resp.ok){
+                    throw new Error("Erreur pendant la suppression du projet.");
+                }
+            
+            
+            const figureDelete = event.target.closest("figure");
+    
+                if(figureDelete){
+                    figureDelete.remove();
+                }
+    
+                console.log("Projet supprimer avec succès");
+    
+          }catch(error) {
+            console.log("Erreur : ", error);
+    
+          }
+    
+          }
 
     }
 

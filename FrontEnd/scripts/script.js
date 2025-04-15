@@ -66,7 +66,7 @@ function containerFilter(categories) {
     
     const filterAll = document.createElement("button");
     filterAll.innerText = "Tous";
-    filterAll.classList.add("filter-button");
+    filterAll.classList.add("filter-button", "button-all");
     filterAll.setAttribute("data-id", "all");
     filterContainer.appendChild(filterAll);
 
@@ -77,7 +77,7 @@ function containerFilter(categories) {
         const filter = document.createElement("button");
         filter.innerText = category.name;
         filter.setAttribute("data-id", category.id);
-        filter.classList.add("filter-button");
+        filter.classList.add("filter-button", "button" + category.id);
         filterContainer.appendChild(filter);
 
         

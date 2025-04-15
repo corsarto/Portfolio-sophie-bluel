@@ -148,7 +148,7 @@ main {
     font-size: 16px;
     border: 1px solid #1D6154;
     border-radius: 60px;
-    padding: 7px 17px;
+    padding: 10px 0px;
     background-color: white;
     color: #1D6154;
     font-weight: 700;
@@ -159,6 +159,21 @@ main {
 	background-color: #1D6154;
 	color: white;
 	
+}
+.button-all {
+    width: 100px;
+}
+
+.button1 {
+    width: 100px;
+}
+
+.button2 {
+    width: 157px;
+}
+
+.button3 {
+    width: 198PX;
 }
 .gallery {
 	width: 100%;
