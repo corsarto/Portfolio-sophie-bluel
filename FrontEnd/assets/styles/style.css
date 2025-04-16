@@ -219,7 +219,7 @@ margin: auto;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
 
-input[type="submit"]{
+.submit-contact{
 	font-family: 'Syne';
 	font-weight: 700;
 	color: white;
@@ -336,6 +336,9 @@ button.close-modal {
     justify-content: center;
 }
 .modal-content1 {
+    flex-direction: column;
+}
+.modal-gallery {
     display: flex;
     flex-wrap: wrap;
     margin: 50px 85px;
@@ -347,7 +350,7 @@ button.close-modal {
     row-gap: 20px;
 }
 
-.modal-content1 img {
+.modal-gallery img {
     display: flex;
     max-width: 80px;
 }
@@ -356,6 +359,11 @@ button.close-modal {
     display: flex;
     flex-direction: column;
     width: 100%;
+}
+
+.modal-footer{
+	display:flex;
+	justify-content: center;
 }
 
 .btn-add {
@@ -411,4 +419,96 @@ button.close-modal {
     background-color: white;
     font-size: 22px;
     cursor: pointer;
+}
+.picture-add-content {
+    background-color: #E8F1F6;
+    width: 420px;
+    height: 169px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 10px;
+	border-radius: 3px;
+}
+
+.icon-picture {
+    color: #B9C5CC;
+    font-size: 68px;
+}
+
+.btn-add-picture {
+    width: 173px;
+    height: 36px;
+    align-items: center;
+    border-radius: 50px;
+    background-color: #CBD6DC;
+    border: 0px;
+    color: #306685;
+    font-size: 14px;
+    font-family: 'Work Sans';
+    font-weight: 500;
+	cursor: pointer;
+}
+
+.txt-wrapper-picture {
+    font-size: 10px;
+    color: #444444;
+}
+
+.modal-content2 {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+	align-items: center;
+}
+
+.form-send-picture {
+	display: flex;
+    flex-direction: column;
+    gap: 20px;
+	width: 420px;
+	border-bottom: 1px solid #B3B3B3;
+    padding-bottom: 70px;
+}
+
+.title-add-picture {
+	border: none;
+	box-shadow: 0px 4px 14px 0px #00000017;
+	height: 51px;
+}
+.label-title {
+    color: #3D3D3D;
+    font-size: 14px;
+    font-family: 'Work Sans';
+    font-weight: 500;
+}
+
+.btn-select-cat {
+	border: none;
+	box-shadow: 0px 4px 14px 0px #00000017;
+	height: 51px;
+	
+}
+
+.modal-footer2 {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.btn-send-picture {
+    width: 237px;
+    height: 36px;
+    border: none;
+    border-radius: 60px;
+    background-color: #A7A7A7;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-family: 'Syne';
+    font-weight: 700;
+	cursor: pointer;
 }

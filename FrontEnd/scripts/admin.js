@@ -1,6 +1,10 @@
 let modal = null;
 let urlAdmin = 'http://localhost:5678/api/'
 let previouslyFocusedElement = null;
+
+const viewModal1 = document.getElementById('modal-content1');
+const viewModal2 = document.getElementById('modal-content2');
+
 const openModal = function (e) {
     e.preventDefault()
     previouslyFocusedElement = document.activeElement
@@ -10,14 +14,18 @@ const openModal = function (e) {
     modal.removeAttribute('aria-hidden')
     modal.setAttribute('aria-modal', 'true')
 
+    viewModal1.setAttribute('style', 'display: flex');
+    viewModal2.setAttribute('style', 'display: none');
+
     modal.focus();
 
-
-    modal.addEventListener('click', closeModal)
-    modal.querySelector('.close-modal').addEventListener('click', closeModal)
-
-    modal.querySelector('.modal-container').addEventListener('click', stopPropagation)
-
+    const closeButtons = modal.querySelectorAll('.close-modal');
+    closeButtons.forEach(btn => {
+    btn.addEventListener('click', closeModal);
+});
+    modal.addEventListener('click', closeModal);
+    modal.querySelector('.close-modal').addEventListener('click', closeModal);
+    modal.querySelector('.modal-container').addEventListener('click', stopPropagation);
 }
 
 const closeModal = function (e) {
@@ -28,8 +36,13 @@ const closeModal = function (e) {
     modal.style.display = "none"
     modal.setAttribute('aria-hidden', 'true')
     modal.removeAttribute('aria-modal')
-    modal.removeEventListener('click', closeModal)
-    modal.querySelector('.close-modal').removeEventListener('click', closeModal)
+    
+    const closeButtons = modal.querySelectorAll('.close-modal');
+    closeButtons.forEach(btn => {
+    btn.removeEventListener('click', closeModal);
+});
+    modal.removeEventListener('click', closeModal);
+    modal.querySelector('.close-modal').removeEventListener('click', closeModal);
     modal.querySelector('.modal-container').removeEventListener('click', stopPropagation)
     
     if (previouslyFocusedElement){ 
@@ -73,9 +86,8 @@ async function fetchWorksModalContent() {
 
 function containerModal(data) {
 
-    const pictureModal = document.querySelector('.modal-content1');
-    const containerModal = document.querySelector('.modal-container');
-    pictureModal.innerHTML = '';
+    const pictureGallery = document.querySelector('.modal-gallery');
+    pictureGallery.innerHTML = '';
 
 
     for (let i = 0; i < data.length; i++) {
@@ -97,7 +109,7 @@ function containerModal(data) {
 
         figure.appendChild(img);
         figure.appendChild(trashIcon);
-        pictureModal.appendChild(figure);
+        pictureGallery.appendChild(figure);
 
         async function deleteContent(event) {
             const id = event.target.dataset.id;
@@ -149,79 +161,143 @@ function containerModal(data) {
 
 
 
-    const footModal = document.createElement('div');
-    footModal.classList.add('modal-footer');
+    const footModal1 = document.createElement('div');
+    footModal1.classList.add('modal-footer');
     const addBtn = document.createElement('button');
     addBtn.classList.add('btn-add');
     addBtn.innerText = 'Ajouter une photo';
 
 
+    footModal1.appendChild(addBtn);
+    viewModal1.appendChild(footModal1);
+    
 
 
+    
 
-    footModal.appendChild(addBtn);
-    containerModal.appendChild(footModal);
-
-    const titleModalAdd = document.getElementById('title-modal2');
-    const titalModalPicture = document.getElementById('title-modal1');
+    
     const addPictureContent = document.querySelector('.modal-content2');
     const btnReturn = document.querySelector('.return-modal');
 
     const addPictureWrapper = document.createElement('div');
     addPictureWrapper.classList.add('picture-add-content');
+    
     const pictureIcone = document.createElement('i');
     pictureIcone.classList.add('far', 'fa-image', 'icon-picture');
-    pictureIcone.setAttribute('style', 'display: none;');
+    
 
     const btnAddPicture = document.createElement('button');
     btnAddPicture.classList.add('btn-add-picture');
     btnAddPicture.innerText = '+ Ajouter photo';
-    btnAddPicture.setAttribute('style', 'display: none;');
+    
 
     const txtAddPicture = document.createElement('p');
     txtAddPicture.classList.add('txt-wrapper-picture');
     txtAddPicture.innerText = 'jpg, png : 4mo max'
-    txtAddPicture.setAttribute('style', 'display: none;');
+    
+
+    const formAddNewPicture = document.createElement('div');
+    formAddNewPicture.classList.add('form-send-picture');
+    
+
+    const labelTitleAdd = document.createElement('label');
+    labelTitleAdd.classList.add('label-title')
+    labelTitleAdd.textContent = 'Titre';
+
+    const formAddTitle = document.createElement('input');
+    formAddTitle.classList.add('title-add-picture');
+    formAddTitle.setAttribute('type', 'text');
+    formAddTitle.setAttribute('id', 'form-title');
+
+    const labelTitleCat = document.createElement('label');
+    labelTitleCat.classList.add('label-title')
+    labelTitleCat.textContent = 'Catégorie';
+
+    const selectCat = document.createElement('select');
+    selectCat.classList.add('btn-select-cat');
+
+   
+        async function fetchCategoriesModal() {
+                try {
+                    const response = await fetch(urlAdmin + 'categories');
+                    if (!response.ok) {
+                        throw new Error("Erreur dans la récupération des catégories");
+                    }
+                    const categories = await response.json();
+
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.disabled = true;  
+                    defaultOption.selected = true;  
+                    defaultOption.textContent = '';
+                    selectCat.appendChild(defaultOption);
+                    
+                    
+                    categories.forEach(cat => {
+                        const option = document.createElement('option');
+                        option.value = cat.id;
+                        option.textContent = cat.name;
+                        selectCat.appendChild(option);
+                    });
+                    
+                    
+                    formAddNewPicture.appendChild(labelTitleAdd);
+                    formAddNewPicture.appendChild(formAddTitle);
+                    formAddNewPicture.appendChild(labelTitleCat);
+                    formAddNewPicture.appendChild(selectCat);
+        
+                    
+                    
+                    
+                     
+                } catch (error) {
+                    console.error("Erreur : ", error);
+                }
+            }
+            fetchCategoriesModal();
+    const btnAddNewPicture = document.createElement('input');
+    btnAddNewPicture.classList.add('btn-send-picture');
+    btnAddNewPicture.setAttribute('type', 'submit');
+    btnAddNewPicture.value= 'Valider';
+    
+    const footModal2 = document.createElement('div');
+    footModal2.classList.add('modal-footer2');
+
+            addPictureContent.appendChild(addPictureWrapper);
+            addPictureWrapper.appendChild(pictureIcone);
+            addPictureWrapper.appendChild(btnAddPicture);
+            addPictureWrapper.appendChild(txtAddPicture);
+            addPictureContent.appendChild(addPictureWrapper);
+            addPictureContent.appendChild(formAddNewPicture);
+            viewModal2.appendChild(footModal2);
+            footModal2.appendChild(btnAddNewPicture);
+
+        function resetForm() {
+            formAddTitle.value = '';
+            selectCat.selectedIndex = 0;
+        }
+            
 
 
+   
 
 
-
-
-    addPictureContent.appendChild(addPictureWrapper);
-    addPictureWrapper.appendChild(pictureIcone);
-    addPictureWrapper.appendChild(btnAddPicture);
-    addPictureWrapper.appendChild(txtAddPicture);
 
     addBtn.addEventListener('click', () => {
 
-        titleModalAdd.setAttribute('style', 'display: flex;');
-        titalModalPicture.setAttribute('style', 'display: none;');
-        pictureModal.setAttribute('style', 'display: none;');
-        addBtn.setAttribute('style', 'display: none;');
-        btnReturn.setAttribute('style', 'display: flex;');
-        addPictureContent.setAttribute('style', 'display: flex;');
-        pictureIcone.setAttribute('style', 'display: flex;');
-        btnAddPicture.setAttribute('style', 'display: flex;');
-        txtAddPicture.setAttribute('style', 'display: flex;');
+        viewModal1.setAttribute('style', 'display: none');
+        viewModal2.setAttribute('style', 'display: flex');
 
-
-
-
-    });
+        resetForm();
+     });
 
 
     btnReturn.addEventListener('click', () => {
 
-        titleModalAdd.setAttribute('style', 'display: none;');
-        titalModalPicture.setAttribute('style', 'display: flex;');
-        pictureModal.setAttribute('style', 'display: flex;');
-        addBtn.setAttribute('style', 'display: flex;');
-        btnReturn.setAttribute('style', 'display: none;');
-        addPictureContent.setAttribute('style', 'display: none;');
-        pictureIcone.setAttribute('style', 'display: none;');
-        btnAddPicture.setAttribute('style', 'display: none;');
-        txtAddPicture.setAttribute('style', 'display: none;');
+        viewModal1.setAttribute('style', 'display: flex');
+        viewModal2.setAttribute('style', 'display: none');
+
+        resetForm();
 
     });
 
