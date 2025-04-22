@@ -47,7 +47,10 @@ const closeModal = function (e) {
     
     if (previouslyFocusedElement){ 
         previouslyFocusedElement.focus();}
-
+    
+    if (typeof resetForm === 'function') {
+        resetForm();
+    }
     modal = null
 }
 
@@ -85,9 +88,11 @@ async function fetchWorksModalContent() {
 
 
 function containerModal(data) {
-
+   
     const pictureGallery = document.querySelector('.modal-gallery');
     pictureGallery.innerHTML = '';
+    
+    
 
 
     for (let i = 0; i < data.length; i++) {
@@ -148,6 +153,7 @@ function containerModal(data) {
                 }
     
                 console.log("Projet supprimer avec succès");
+                window.location.reload();
     
           }catch(error) {
             console.log("Erreur : ", error);
@@ -186,9 +192,17 @@ function containerModal(data) {
     pictureIcone.classList.add('far', 'fa-image', 'icon-picture');
     
 
-    const btnAddPicture = document.createElement('button');
-    btnAddPicture.classList.add('btn-add-picture');
-    btnAddPicture.innerText = '+ Ajouter photo';
+    const btnAddPicture = document.createElement('input');
+    btnAddPicture.setAttribute('type', 'file');
+    btnAddPicture.setAttribute('accept', 'image/png, image/jpg');
+    btnAddPicture.setAttribute('style', 'display: none');
+    btnAddPicture.id = 'fileInput';
+    
+
+    const labelBtnFile = document.createElement('label');
+    labelBtnFile.setAttribute('for', 'fileInput');
+    labelBtnFile.classList.add('btn-add-picture');
+    labelBtnFile.innerText = '+ Ajouter photo';
     
 
     const txtAddPicture = document.createElement('p');
@@ -266,15 +280,25 @@ function containerModal(data) {
             addPictureContent.appendChild(addPictureWrapper);
             addPictureWrapper.appendChild(pictureIcone);
             addPictureWrapper.appendChild(btnAddPicture);
+            addPictureWrapper.appendChild(labelBtnFile);
             addPictureWrapper.appendChild(txtAddPicture);
             addPictureContent.appendChild(addPictureWrapper);
             addPictureContent.appendChild(formAddNewPicture);
             viewModal2.appendChild(footModal2);
             footModal2.appendChild(btnAddNewPicture);
-
+            
         function resetForm() {
             formAddTitle.value = '';
             selectCat.selectedIndex = 0;
+            
+            const oldPreviewImage = addPictureWrapper.querySelector('img');
+            if (oldPreviewImage) {
+                oldPreviewImage.remove();
+            }
+
+            pictureIcone.setAttribute('style', 'display: flex');
+            labelBtnFile.setAttribute('style', 'display: flex');
+            txtAddPicture.setAttribute('style', 'display: flex');
         }
             
 
@@ -301,6 +325,104 @@ function containerModal(data) {
 
     });
 
+    const previewImg = document.getElementById('preview-img');
+
+    function validTypeFiles(file) {
+    const fileTypes = ['image/jpg', 'image/png'];
+    return fileTypes.includes(file.type);
+    }
+
+    function newImageAddDisplay (event) {
+        event.preventDefault();
+        
+        const file = event.target.files[0];
+        previewImg.innerHTML = '';
+
+        const pictureIcone = document.querySelector('.icon-picture');
+        const labelBtnFile = document.querySelector('label[for="fileInput"]');
+        const txtAddPicture = document.querySelector('.txt-wrapper-picture');
+
+    if (!file) {
+        const textAddImg = document.createElement('p');
+        textAddImg.textContent= "Aucune image sélectionnée.";
+        previewImg.appendChild(textAddImg);
+        pictureIcone.setAttribute('style', 'display: flex');
+        labelBtnFile.setAttribute('style', 'display: flex');
+        txtAddPicture.setAttribute('style', 'display: flex');
+        return;
+    }
+        
+    
+        if(validTypeFiles(file)){
+        const image = document.createElement('img');
+        image.src = URL.createObjectURL(file);
+        image.style.maxWidth = '420px';
+        image.style.maxHeight = '169px';
+        image.alt = 'Aperçu de l’image';
+
+        addPictureWrapper.appendChild(image);
+
+        pictureIcone.setAttribute('style', 'display: none');
+        labelBtnFile.setAttribute('style', 'display: none');
+        txtAddPicture.setAttribute('style', 'display: none');
+    }
+    else{
+        const textNoneImg = document.createElement('p');
+        textNoneImg.textContent= "Le format de l'image n'est pas supporter. Les formats accepter sont JPG et PNG.";
+        addPictureWrapper.appendChild(textNoneImg);
+        pictureIcone.setAttribute('style', 'display: flex');
+        labelBtnFile.setAttribute('style', 'display: flex');
+        txtAddPicture.setAttribute('style', 'display: flex');
+    }
+    
+    
+      }
+      btnAddPicture.addEventListener('change', newImageAddDisplay);
+
+    async function sendNewPicture(event) {
+        event.preventDefault();
+        const token = localStorage.getItem("token");
+        const idCat = selectCat.value;
+        const title = formAddTitle.value;
+        const file = btnAddPicture.files[0];
+    
+        if (!idCat || !title || !file) {
+            console.error("Veuillez remplir tous les champs.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('title', title);
+        formData.append('category', idCat);
+
+        try {
+            const response = await fetch(urlAdmin + 'works', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur lors de l'ajout du projet.");
+            }
+
+            const newProject = await response.json();
+            console.log("Projet ajouté avec succès", newProject);
+            closeModal(event);
+            window.location.reload();
+            
+            
+
+        } catch (error) {
+            console.error("Erreur : ", error);
+        }
+    }
+    btnAddNewPicture.addEventListener('click', sendNewPicture);
+    
+    
 }
 
 
@@ -331,3 +453,4 @@ logoutBtn.addEventListener('click', function (e) {
 });
 
 fetchWorksModalContent();
+
