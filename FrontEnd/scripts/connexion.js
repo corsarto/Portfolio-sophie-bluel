@@ -1,5 +1,5 @@
 
-let urlLogin = 'http://localhost:5678/api/'
+let urlLogin = 'http://localhost:5678/api/';
 
  function sendLogin() {
     const formConnexion = document.querySelector(".login-form");
@@ -17,10 +17,7 @@ let urlLogin = 'http://localhost:5678/api/'
         const utileCharge = JSON.stringify(loginData);
         localStorage.setItem('adminEmail', loginData.email);
 
-
-
-
-        let errorMessage = document.querySelector(".error-message");
+    let errorMessage = document.querySelector(".error-message");
         if (!errorMessage) {
             errorMessage = document.createElement("div");
             errorMessage.classList.add("error-message");
@@ -35,8 +32,7 @@ let urlLogin = 'http://localhost:5678/api/'
             method : "POST",
             headers : { "Content-Type" : "application/json" },
             body : utileCharge,
-        }
-        )
+        });
         
     if (response.ok) {
             const data = await response.json();
@@ -53,8 +49,7 @@ let urlLogin = 'http://localhost:5678/api/'
 
         } else {
             window.location.href = "index.html";
-        }
-    } 
+        }} 
         else {
             errorMessage.style.display = "block";
             errorMessage.innerText = "Erreur dans l’identifiant ou le mot de passe";
@@ -66,8 +61,6 @@ let urlLogin = 'http://localhost:5678/api/'
 
     formConnexion.reset(); 
     });}
-
-
 
 sendLogin();
 

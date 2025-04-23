@@ -1,6 +1,6 @@
 
 let allProjects = []; 
-let url = 'http://localhost:5678/api/'
+let url = 'http://localhost:5678/api/';
 
 async function fetchWorks() {
     try {
@@ -14,15 +14,12 @@ async function fetchWorks() {
         containerGallery(allProjects);  
     } catch (error) {
         console.error("Erreur : ", error);
-    }
-}
-
+    }}
 
 function containerGallery(data) {
     const gallery = document.querySelector(".gallery");
     gallery.innerHTML = "";  
 
-    
     for (let i = 0; i < data.length; i++) {
         const work = data[i];
         
@@ -41,7 +38,6 @@ function containerGallery(data) {
     }
 }
 
-
 async function fetchCategories() {
     try {
         const response = await fetch(url + 'categories');
@@ -50,14 +46,11 @@ async function fetchCategories() {
         }
         const categories = await response.json();
         
-
         containerFilter(categories);  
     } catch (error) {
         console.error("Erreur : ", error);
     }
 }
-
-
 function containerFilter(categories) {
     const filterContainer = document.querySelector(".filters-portfolio");
     if (filterContainer === null) {
@@ -70,7 +63,6 @@ function containerFilter(categories) {
     filterAll.setAttribute("data-id", "all");
     filterContainer.appendChild(filterAll);
 
-    
     for (let i = 0; i < categories.length; i++) {
         const category = categories[i];
         
@@ -80,7 +72,6 @@ function containerFilter(categories) {
         filter.classList.add("filter-button", "button" + category.id);
         filterContainer.appendChild(filter);
 
-        
         filter.addEventListener("click", () => {
             filterProjects(category.id); 
         });
@@ -90,7 +81,6 @@ function containerFilter(categories) {
         filterProjects("all");
     });
 }
-
 
 function filterProjects(categoryId) {
     let filteredProjects;
@@ -103,10 +93,8 @@ function filterProjects(categoryId) {
         filteredProjects = allProjects.filter(project => project.category.id === parseInt(categoryId));
     }
 
-    
     containerGallery(filteredProjects);
 }
-
 
 fetchWorks();
 fetchCategories();

@@ -1,18 +1,23 @@
 let modal = null;
-let urlAdmin = 'http://localhost:5678/api/'
+let urlAdmin = 'http://localhost:5678/api/';
 let previouslyFocusedElement = null;
+
 
 const viewModal1 = document.getElementById('modal-content1');
 const viewModal2 = document.getElementById('modal-content2');
 
-const openModal = function (e) {
-    e.preventDefault()
-    previouslyFocusedElement = document.activeElement
+const errorMessage = document.createElement('p');
+errorMessage.classList.add('error-message');
+errorMessage.setAttribute('style', 'display: none');
 
-    modal = document.querySelector(e.target.getAttribute("href"))
+const openModal = function (e) {
+    e.preventDefault();
+    previouslyFocusedElement = document.activeElement;
+
+    modal = document.querySelector(e.target.getAttribute("href"));
     modal.style.display = null;
-    modal.removeAttribute('aria-hidden')
-    modal.setAttribute('aria-modal', 'true')
+    modal.removeAttribute('aria-hidden');
+    modal.setAttribute('aria-modal', 'true');
 
     viewModal1.setAttribute('style', 'display: flex');
     viewModal2.setAttribute('style', 'display: none');
@@ -26,16 +31,16 @@ const openModal = function (e) {
     modal.addEventListener('click', closeModal);
     modal.querySelector('.close-modal').addEventListener('click', closeModal);
     modal.querySelector('.modal-container').addEventListener('click', stopPropagation);
-}
+};
 
 const closeModal = function (e) {
     if (modal === null) { return }
-    e.preventDefault()
+    e.preventDefault();
     modal.blur();
 
-    modal.style.display = "none"
-    modal.setAttribute('aria-hidden', 'true')
-    modal.removeAttribute('aria-modal')
+    modal.style.display = "none";
+    modal.setAttribute('aria-hidden', 'true');
+    modal.removeAttribute('aria-modal');
     
     const closeButtons = modal.querySelectorAll('.close-modal');
     closeButtons.forEach(btn => {
@@ -43,20 +48,19 @@ const closeModal = function (e) {
 });
     modal.removeEventListener('click', closeModal);
     modal.querySelector('.close-modal').removeEventListener('click', closeModal);
-    modal.querySelector('.modal-container').removeEventListener('click', stopPropagation)
+    modal.querySelector('.modal-container').removeEventListener('click', stopPropagation);
     
     if (previouslyFocusedElement){ 
         previouslyFocusedElement.focus();}
     
-    if (typeof resetForm === 'function') {
-        resetForm();
-    }
-    modal = null
-}
+    errorMessage.style.display = "none";
+    errorMessage.textContent = "";
+    modal = null;
+};
 
 const stopPropagation = function (e) {
-    e.stopPropagation()
-}
+    e.stopPropagation();
+};
 
 document.querySelectorAll('.admin-portfolio-intro').forEach(a => {
     a.addEventListener('click', openModal);
@@ -67,8 +71,7 @@ window.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' || e.key === 'Esc') {
         closeModal(e);
     }
-})
-
+});
 
 async function fetchWorksModalContent() {
     try {
@@ -76,25 +79,20 @@ async function fetchWorksModalContent() {
         if (!response.ok) {
             throw new Error("Erreur dans la récupération des projets pour la modale");
         }
-        const projetcsModal = await response.json(); 
+        const projectsModal = await response.json(); 
         
 
-        containerModal(projetcsModal);  
+        containerModal(projectsModal);  
     } catch (error) {
         console.error("Erreur : ", error);
     }
 }
-
-
 
 function containerModal(data) {
    
     const pictureGallery = document.querySelector('.modal-gallery');
     pictureGallery.innerHTML = '';
     
-    
-
-
     for (let i = 0; i < data.length; i++) {
         const work = data[i];
         const figure = document.createElement("figure");
@@ -111,7 +109,6 @@ function containerModal(data) {
 
         trashIcon.addEventListener('click', deleteContent);
 
-
         figure.appendChild(img);
         figure.appendChild(trashIcon);
         pictureGallery.appendChild(figure);
@@ -126,13 +123,13 @@ function containerModal(data) {
             }
     
             if(!id) {
-                console.log("L'id n'a pas été trouver, suppression annulée.")
+                console.log("L'id n'a pas été trouver, suppression annulée.");
                 return;
             }
     
             const headers = {
                 'Authorization': 'Bearer ' + token,
-            }
+            };
     
             try{
                 const resp = await fetch(urlAdmin + `works/${id}`,{
@@ -158,14 +155,7 @@ function containerModal(data) {
           }catch(error) {
             console.log("Erreur : ", error);
     
-          }
-    
-          }
-
-    }
-
-
-
+          }}}
 
     const footModal1 = document.createElement('div');
     footModal1.classList.add('modal-footer');
@@ -173,14 +163,8 @@ function containerModal(data) {
     addBtn.classList.add('btn-add');
     addBtn.innerText = 'Ajouter une photo';
 
-
     footModal1.appendChild(addBtn);
     viewModal1.appendChild(footModal1);
-    
-
-
-    
-
     
     const addPictureContent = document.querySelector('.modal-content2');
     const btnReturn = document.querySelector('.return-modal');
@@ -191,31 +175,26 @@ function containerModal(data) {
     const pictureIcone = document.createElement('i');
     pictureIcone.classList.add('far', 'fa-image', 'icon-picture');
     
-
     const btnAddPicture = document.createElement('input');
     btnAddPicture.setAttribute('type', 'file');
     btnAddPicture.setAttribute('accept', 'image/png, image/jpg');
     btnAddPicture.setAttribute('style', 'display: none');
     btnAddPicture.id = 'fileInput';
     
-
     const labelBtnFile = document.createElement('label');
     labelBtnFile.setAttribute('for', 'fileInput');
     labelBtnFile.classList.add('btn-add-picture');
     labelBtnFile.innerText = '+ Ajouter photo';
     
-
     const txtAddPicture = document.createElement('p');
     txtAddPicture.classList.add('txt-wrapper-picture');
-    txtAddPicture.innerText = 'jpg, png : 4mo max'
+    txtAddPicture.innerText = 'jpg, png : 4mo max';
     
-
     const formAddNewPicture = document.createElement('div');
     formAddNewPicture.classList.add('form-send-picture');
     
-
     const labelTitleAdd = document.createElement('label');
-    labelTitleAdd.classList.add('label-title')
+    labelTitleAdd.classList.add('label-title');
     labelTitleAdd.textContent = 'Titre';
 
     const formAddTitle = document.createElement('input');
@@ -224,18 +203,22 @@ function containerModal(data) {
     formAddTitle.setAttribute('id', 'form-title');
 
     const labelTitleCat = document.createElement('label');
-    labelTitleCat.classList.add('label-title')
+    labelTitleCat.classList.add('label-title');
     labelTitleCat.textContent = 'Catégorie';
 
     const selectCat = document.createElement('select');
     selectCat.classList.add('btn-select-cat');
 
-   
-        async function fetchCategoriesModal() {
-                try {
-                    const response = await fetch(urlAdmin + 'categories');
-                    if (!response.ok) {
-                        throw new Error("Erreur dans la récupération des catégories");
+    const iconCat = document.querySelector('.icon-form');
+
+    const formCAt = document.createElement('div');
+    formCAt.classList.add('form-select-cat');
+
+    async function fetchCategoriesModal() {
+        try {
+            const response = await fetch(urlAdmin + 'categories');
+            if (!response.ok) {
+                throw new Error("Erreur dans la récupération des catégories");
                     }
                     const categories = await response.json();
 
@@ -246,7 +229,6 @@ function containerModal(data) {
                     defaultOption.textContent = '';
                     selectCat.appendChild(defaultOption);
                     
-                    
                     categories.forEach(cat => {
                         const option = document.createElement('option');
                         option.value = cat.id;
@@ -254,38 +236,37 @@ function containerModal(data) {
                         selectCat.appendChild(option);
                     });
                     
-                    
                     formAddNewPicture.appendChild(labelTitleAdd);
                     formAddNewPicture.appendChild(formAddTitle);
                     formAddNewPicture.appendChild(labelTitleCat);
-                    formAddNewPicture.appendChild(selectCat);
+                    formCAt.appendChild(selectCat);
+                    formCAt.appendChild(iconCat);
         
-                    
-                    
-                    
-                     
-                } catch (error) {
+                    } catch (error) {
                     console.error("Erreur : ", error);
                 }
-            }
-            fetchCategoriesModal();
-    const btnAddNewPicture = document.createElement('input');
-    btnAddNewPicture.classList.add('btn-send-picture');
-    btnAddNewPicture.setAttribute('type', 'submit');
-    btnAddNewPicture.value= 'Valider';
-    
-    const footModal2 = document.createElement('div');
-    footModal2.classList.add('modal-footer2');
+    }
+    fetchCategoriesModal();
+        const btnAddNewPicture = document.createElement('input');
+        btnAddNewPicture.classList.add('btn-send-picture');
+        btnAddNewPicture.setAttribute('type', 'submit');
+        btnAddNewPicture.value= 'Valider';
+ 
+        const footModal2 = document.createElement('div');
+        footModal2.classList.add('modal-footer2');
 
-            addPictureContent.appendChild(addPictureWrapper);
-            addPictureWrapper.appendChild(pictureIcone);
-            addPictureWrapper.appendChild(btnAddPicture);
-            addPictureWrapper.appendChild(labelBtnFile);
-            addPictureWrapper.appendChild(txtAddPicture);
-            addPictureContent.appendChild(addPictureWrapper);
-            addPictureContent.appendChild(formAddNewPicture);
-            viewModal2.appendChild(footModal2);
-            footModal2.appendChild(btnAddNewPicture);
+        addPictureContent.appendChild(addPictureWrapper);
+        addPictureWrapper.appendChild(pictureIcone);
+        addPictureWrapper.appendChild(btnAddPicture);
+        addPictureWrapper.appendChild(labelBtnFile);
+        addPictureWrapper.appendChild(txtAddPicture);
+        addPictureContent.appendChild(addPictureWrapper);
+        addPictureContent.appendChild(formAddNewPicture);
+        addPictureContent.appendChild(formCAt);
+        viewModal2.appendChild(footModal2);
+        footModal2.appendChild(btnAddNewPicture);
+        footModal2.appendChild(errorMessage);
+        
             
         function resetForm() {
             formAddTitle.value = '';
@@ -301,28 +282,24 @@ function containerModal(data) {
             txtAddPicture.setAttribute('style', 'display: flex');
         }
             
-
-
-   
-
-
-
     addBtn.addEventListener('click', () => {
 
         viewModal1.setAttribute('style', 'display: none');
         viewModal2.setAttribute('style', 'display: flex');
 
         resetForm();
-     });
-
+        checkFormValidity();
+    });
 
     btnReturn.addEventListener('click', () => {
 
         viewModal1.setAttribute('style', 'display: flex');
         viewModal2.setAttribute('style', 'display: none');
+        errorMessage.style.display = "none";
+        errorMessage.textContent = "";
 
         resetForm();
-
+        checkFormValidity();
     });
 
     const previewImg = document.getElementById('preview-img');
@@ -352,8 +329,7 @@ function containerModal(data) {
         return;
     }
         
-    
-        if(validTypeFiles(file)){
+    if(validTypeFiles(file)){
         const image = document.createElement('img');
         image.src = URL.createObjectURL(file);
         image.style.maxWidth = '420px';
@@ -373,58 +349,64 @@ function containerModal(data) {
         pictureIcone.setAttribute('style', 'display: flex');
         labelBtnFile.setAttribute('style', 'display: flex');
         txtAddPicture.setAttribute('style', 'display: flex');
-    }
-    
-    
-      }
+    }}
       btnAddPicture.addEventListener('change', newImageAddDisplay);
-
+      
     async function sendNewPicture(event) {
         event.preventDefault();
         const token = localStorage.getItem("token");
         const idCat = selectCat.value;
         const title = formAddTitle.value;
         const file = btnAddPicture.files[0];
-    
-        if (!idCat || !title || !file) {
-            console.error("Veuillez remplir tous les champs.");
+
+    if (!idCat || !title || !file) {
+            errorMessage.textContent = "Veuillez remplir tous les champs.";
+            errorMessage.style.display = "block";
             return;
         }
-
+        
         const formData = new FormData();
         formData.append('image', file);
         formData.append('title', title);
         formData.append('category', idCat);
 
-        try {
-            const response = await fetch(urlAdmin + 'works', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                },
-                body: formData,
-            });
+    try {
+        const response = await fetch(urlAdmin + 'works', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+            },
+            body: formData,
+        });
 
-            if (!response.ok) {
-                throw new Error("Erreur lors de l'ajout du projet.");
-            }
+        if (!response.ok) {
+            throw new Error("Erreur lors de l'ajout du projet.");
+        }
 
-            const newProject = await response.json();
+        const newProject = await response.json();
             console.log("Projet ajouté avec succès", newProject);
             closeModal(event);
             window.location.reload();
+            errorMessage.style.display = "none";
+            errorMessage.textContent = "";
             
-            
-
         } catch (error) {
             console.error("Erreur : ", error);
         }
     }
+    function checkFormValidity() {
+        if (formAddTitle.value && selectCat.value && btnAddPicture.files.length > 0) {
+            btnAddNewPicture.classList.add('active');
+        } else {
+            btnAddNewPicture.classList.remove('active');
+        }
+    }
+    formAddTitle.addEventListener('input', checkFormValidity);
+    selectCat.addEventListener('change', checkFormValidity);
+    btnAddPicture.addEventListener('change', checkFormValidity);
+    
     btnAddNewPicture.addEventListener('click', sendNewPicture);
-    
-    
 }
-
 
 const adminConnexion = localStorage.getItem("adminEmail") === "sophie.bluel@test.tld";
 
@@ -441,7 +423,6 @@ if (adminConnexion) {
     let galleryFilters = document.querySelector('.filters-portfolio');
     galleryFilters.setAttribute('style', 'display: none');
 }
-
 
 const logoutBtn = document.querySelector('.logout-access');
 
