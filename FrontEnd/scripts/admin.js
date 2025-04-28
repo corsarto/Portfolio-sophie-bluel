@@ -1,61 +1,90 @@
-let modal = null;
+import { errorMessage, galleryModalFooter, addBtn, addPictureWrapper, 
+    pictureIcon, btnAddPicture, labelBtnFile, pictureInstructionText,
+    formAddNewPicture, labelTitleAdd,  formAddTitle, labelTitleCat,
+    selectCat, formCat,  btnAddNewPicture, addPictureModalFooter } from './createElement.js';
+import {fetchWorks } from './script.js';
+let currentModal = null;
 let urlAdmin = 'http://localhost:5678/api/';
 let previouslyFocusedElement = null;
 
 
-const viewModal1 = document.getElementById('modal-content1');
-const viewModal2 = document.getElementById('modal-content2');
+const galleryModalContent = document.getElementById('modal-content1');
+const addPictureModalContent = document.getElementById('modal-content2');
 
-const errorMessage = document.createElement('p');
-errorMessage.classList.add('error-message');
-errorMessage.setAttribute('style', 'display: none');
+galleryModalFooter.appendChild(addBtn);
+galleryModalContent.appendChild(galleryModalFooter);
+
+const addPictureContent = document.querySelector('.modal-content2');
+const btnReturn = document.querySelector('.return-modal');
+
+const iconCat = document.querySelector('.icon-form');
+
+addPictureContent.appendChild(addPictureWrapper);
+addPictureWrapper.appendChild(pictureIcon);
+addPictureWrapper.appendChild(btnAddPicture);
+addPictureWrapper.appendChild(labelBtnFile);
+addPictureWrapper.appendChild(pictureInstructionText);
+addPictureContent.appendChild(addPictureWrapper);
+addPictureContent.appendChild(formAddNewPicture);
+addPictureContent.appendChild(formCat);
+addPictureModalContent.appendChild(addPictureModalFooter);
+addPictureModalFooter.appendChild(btnAddNewPicture);
+addPictureModalFooter.appendChild(errorMessage);
+formAddNewPicture.appendChild(labelTitleAdd);
+formAddNewPicture.appendChild(formAddTitle);
+formAddNewPicture.appendChild(labelTitleCat);
+formCat.appendChild(selectCat);
+formCat.appendChild(iconCat);
 
 const openModal = function (e) {
     e.preventDefault();
     previouslyFocusedElement = document.activeElement;
 
-    modal = document.querySelector(e.target.getAttribute("href"));
-    modal.style.display = null;
-    modal.removeAttribute('aria-hidden');
-    modal.setAttribute('aria-modal', 'true');
+    currentModal = document.querySelector(e.target.getAttribute("href"));
+    currentModal.style.display = null;
+    currentModal.removeAttribute('aria-hidden');
+    currentModal.setAttribute('aria-modal', 'true');
 
-    viewModal1.setAttribute('style', 'display: flex');
-    viewModal2.setAttribute('style', 'display: none');
+    galleryModalContent.setAttribute('style', 'display: flex');
+    addPictureModalContent.setAttribute('style', 'display: none');
 
-    modal.focus();
+    currentModal.focus();
 
-    const closeButtons = modal.querySelectorAll('.close-modal');
+    const closeButtons = currentModal.querySelectorAll('.close-modal');
     closeButtons.forEach(btn => {
     btn.addEventListener('click', closeModal);
 });
-    modal.addEventListener('click', closeModal);
-    modal.querySelector('.close-modal').addEventListener('click', closeModal);
-    modal.querySelector('.modal-container').addEventListener('click', stopPropagation);
+    currentModal.addEventListener('click', closeModal);
+    currentModal.querySelector('.close-modal').addEventListener('click', closeModal);
+    currentModal.querySelector('.modal-container').addEventListener('click', stopPropagation);
 };
 
 const closeModal = function (e) {
-    if (modal === null) { return }
+    if (currentModal === null)  return;
     e.preventDefault();
-    modal.blur();
+    const scrollPosition = window.scrollY;
+    currentModal.blur();
 
-    modal.style.display = "none";
-    modal.setAttribute('aria-hidden', 'true');
-    modal.removeAttribute('aria-modal');
+    currentModal.style.display = "none";
+    currentModal.setAttribute('aria-hidden', 'true');
+    currentModal.removeAttribute('aria-modal');
     
-    const closeButtons = modal.querySelectorAll('.close-modal');
+    const closeButtons = currentModal.querySelectorAll('.close-modal');
     closeButtons.forEach(btn => {
     btn.removeEventListener('click', closeModal);
 });
-    modal.removeEventListener('click', closeModal);
-    modal.querySelector('.close-modal').removeEventListener('click', closeModal);
-    modal.querySelector('.modal-container').removeEventListener('click', stopPropagation);
+    currentModal.removeEventListener('click', closeModal);
+    currentModal.querySelector('.close-modal').removeEventListener('click', closeModal);
+    currentModal.querySelector('.modal-container').removeEventListener('click', stopPropagation);
     
     if (previouslyFocusedElement){ 
         previouslyFocusedElement.focus();}
     
     errorMessage.style.display = "none";
     errorMessage.textContent = "";
-    modal = null;
+    currentModal = null;
+    
+    window.scrollTo(0, scrollPosition);
 };
 
 const stopPropagation = function (e) {
@@ -65,7 +94,6 @@ const stopPropagation = function (e) {
 document.querySelectorAll('.admin-portfolio-intro').forEach(a => {
     a.addEventListener('click', openModal);
 });
-
 
 window.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' || e.key === 'Esc') {
@@ -81,7 +109,6 @@ async function fetchWorksModalContent() {
         }
         const projectsModal = await response.json(); 
         
-
         containerModal(projectsModal);  
     } catch (error) {
         console.error("Erreur : ", error);
@@ -89,7 +116,7 @@ async function fetchWorksModalContent() {
 }
 
 function containerModal(data) {
-   
+    
     const pictureGallery = document.querySelector('.modal-gallery');
     pictureGallery.innerHTML = '';
     
@@ -107,22 +134,59 @@ function containerModal(data) {
         trashIcon.setAttribute('aria-hidden', 'false');
         trashIcon.dataset.id = work.id;
 
-        trashIcon.addEventListener('click', deleteContent);
+        trashIcon.addEventListener('click', deleteProject);
 
         figure.appendChild(img);
         figure.appendChild(trashIcon);
         pictureGallery.appendChild(figure);
+        }}
 
-        async function deleteContent(event) {
+function addProjectInGallery(projet) {
+            const gallery = document.querySelector(".gallery"); 
+            const figure = document.createElement("figure");
+        
+            const img = document.createElement("img");
+            img.src = projet.imageUrl;
+            img.alt = projet.title;
+        
+            const figcaption = document.createElement("figcaption");
+            figcaption.textContent = projet.title;
+        
+            figure.appendChild(img);
+            figure.appendChild(figcaption);
+            gallery.appendChild(figure);
+        }
+
+function addProjectInModal(projet) {
+            const pictureGallery = document.querySelector('.modal-gallery');
+            const figure = document.createElement("figure");
+            figure.classList.add("image-wrapper");
+        
+            const img = document.createElement("img");
+            img.src = projet.imageUrl;
+            img.alt = projet.title;
+        
+            const trashIcon = document.createElement('i');
+            trashIcon.classList.add('fas', 'fa-trash-can', 'icon-overlay');
+            trashIcon.setAttribute('aria-hidden', 'false');
+            trashIcon.dataset.id = projet.id;
+        
+            trashIcon.addEventListener('click', deleteProject);
+        
+            figure.appendChild(img);
+            figure.appendChild(trashIcon);
+            pictureGallery.appendChild(figure);
+        }
+
+async function deleteProject(event) {
             const id = event.target.dataset.id;
             const token = localStorage.getItem("token");
     
-            if (!token) {
-                console.error("Token manquant, impossible de supprimer ce projet.");
-                return;
-            }
-    
-            if(!id) {
+    if (!token) {
+        console.error("Token manquant, impossible de supprimer ce projet.");
+        return;
+    }
+          if(!id) {
                 console.log("L'id n'a pas été trouver, suppression annulée.");
                 return;
             }
@@ -142,77 +206,13 @@ function containerModal(data) {
                     throw new Error("Erreur pendant la suppression du projet.");
                 }
             
-            
-            const figureDelete = event.target.closest("figure");
-    
-                if(figureDelete){
-                    figureDelete.remove();
-                }
-    
-                console.log("Projet supprimer avec succès");
-                window.location.reload();
-    
-          }catch(error) {
+                    fetchWorks();
+                    fetchWorksModalContent();
+                   
+                }catch(error) {
             console.log("Erreur : ", error);
     
-          }}}
-
-    const footModal1 = document.createElement('div');
-    footModal1.classList.add('modal-footer');
-    const addBtn = document.createElement('button');
-    addBtn.classList.add('btn-add');
-    addBtn.innerText = 'Ajouter une photo';
-
-    footModal1.appendChild(addBtn);
-    viewModal1.appendChild(footModal1);
-    
-    const addPictureContent = document.querySelector('.modal-content2');
-    const btnReturn = document.querySelector('.return-modal');
-
-    const addPictureWrapper = document.createElement('div');
-    addPictureWrapper.classList.add('picture-add-content');
-    
-    const pictureIcone = document.createElement('i');
-    pictureIcone.classList.add('far', 'fa-image', 'icon-picture');
-    
-    const btnAddPicture = document.createElement('input');
-    btnAddPicture.setAttribute('type', 'file');
-    btnAddPicture.setAttribute('accept', 'image/png, image/jpg');
-    btnAddPicture.setAttribute('style', 'display: none');
-    btnAddPicture.id = 'fileInput';
-    
-    const labelBtnFile = document.createElement('label');
-    labelBtnFile.setAttribute('for', 'fileInput');
-    labelBtnFile.classList.add('btn-add-picture');
-    labelBtnFile.innerText = '+ Ajouter photo';
-    
-    const txtAddPicture = document.createElement('p');
-    txtAddPicture.classList.add('txt-wrapper-picture');
-    txtAddPicture.innerText = 'jpg, png : 4mo max';
-    
-    const formAddNewPicture = document.createElement('div');
-    formAddNewPicture.classList.add('form-send-picture');
-    
-    const labelTitleAdd = document.createElement('label');
-    labelTitleAdd.classList.add('label-title');
-    labelTitleAdd.textContent = 'Titre';
-
-    const formAddTitle = document.createElement('input');
-    formAddTitle.classList.add('title-add-picture');
-    formAddTitle.setAttribute('type', 'text');
-    formAddTitle.setAttribute('id', 'form-title');
-
-    const labelTitleCat = document.createElement('label');
-    labelTitleCat.classList.add('label-title');
-    labelTitleCat.textContent = 'Catégorie';
-
-    const selectCat = document.createElement('select');
-    selectCat.classList.add('btn-select-cat');
-
-    const iconCat = document.querySelector('.icon-form');
-
-    const formCAt = document.createElement('div');
-    formCAt.classList.add('form-select-cat');
+          }}
 
     async function fetchCategoriesModal() {
         try {
@@ -235,39 +235,12 @@ function containerModal(data) {
                         option.textContent = cat.name;
                         selectCat.appendChild(option);
                     });
-                    
-                    formAddNewPicture.appendChild(labelTitleAdd);
-                    formAddNewPicture.appendChild(formAddTitle);
-                    formAddNewPicture.appendChild(labelTitleCat);
-                    formCAt.appendChild(selectCat);
-                    formCAt.appendChild(iconCat);
-        
-                    } catch (error) {
+                } catch (error) {
                     console.error("Erreur : ", error);
                 }
     }
     fetchCategoriesModal();
-        const btnAddNewPicture = document.createElement('input');
-        btnAddNewPicture.classList.add('btn-send-picture');
-        btnAddNewPicture.setAttribute('type', 'submit');
-        btnAddNewPicture.value= 'Valider';
- 
-        const footModal2 = document.createElement('div');
-        footModal2.classList.add('modal-footer2');
-
-        addPictureContent.appendChild(addPictureWrapper);
-        addPictureWrapper.appendChild(pictureIcone);
-        addPictureWrapper.appendChild(btnAddPicture);
-        addPictureWrapper.appendChild(labelBtnFile);
-        addPictureWrapper.appendChild(txtAddPicture);
-        addPictureContent.appendChild(addPictureWrapper);
-        addPictureContent.appendChild(formAddNewPicture);
-        addPictureContent.appendChild(formCAt);
-        viewModal2.appendChild(footModal2);
-        footModal2.appendChild(btnAddNewPicture);
-        footModal2.appendChild(errorMessage);
-        
-            
+       
         function resetForm() {
             formAddTitle.value = '';
             selectCat.selectedIndex = 0;
@@ -277,15 +250,15 @@ function containerModal(data) {
                 oldPreviewImage.remove();
             }
 
-            pictureIcone.setAttribute('style', 'display: flex');
+            pictureIcon.setAttribute('style', 'display: flex');
             labelBtnFile.setAttribute('style', 'display: flex');
-            txtAddPicture.setAttribute('style', 'display: flex');
+            pictureInstructionText.setAttribute('style', 'display: flex');
         }
             
     addBtn.addEventListener('click', () => {
 
-        viewModal1.setAttribute('style', 'display: none');
-        viewModal2.setAttribute('style', 'display: flex');
+        galleryModalContent.setAttribute('style', 'display: none');
+        addPictureModalContent.setAttribute('style', 'display: flex');
 
         resetForm();
         checkFormValidity();
@@ -293,8 +266,8 @@ function containerModal(data) {
 
     btnReturn.addEventListener('click', () => {
 
-        viewModal1.setAttribute('style', 'display: flex');
-        viewModal2.setAttribute('style', 'display: none');
+        galleryModalContent.setAttribute('style', 'display: flex');
+        addPictureModalContent.setAttribute('style', 'display: none');
         errorMessage.style.display = "none";
         errorMessage.textContent = "";
 
@@ -352,7 +325,7 @@ function containerModal(data) {
     }}
       btnAddPicture.addEventListener('change', newImageAddDisplay);
       
-    async function sendNewPicture(event) {
+async function sendNewPicture(event) {
         event.preventDefault();
         const token = localStorage.getItem("token");
         const idCat = selectCat.value;
@@ -386,7 +359,8 @@ function containerModal(data) {
         const newProject = await response.json();
             console.log("Projet ajouté avec succès", newProject);
             closeModal(event);
-            window.location.reload();
+            addProjectInGallery(newProject);
+            addProjectInModal(newProject);
             errorMessage.style.display = "none";
             errorMessage.textContent = "";
             
@@ -406,11 +380,10 @@ function containerModal(data) {
     btnAddPicture.addEventListener('change', checkFormValidity);
     
     btnAddNewPicture.addEventListener('click', sendNewPicture);
-}
 
 const adminConnexion = localStorage.getItem("adminEmail") === "sophie.bluel@test.tld";
 
-if (adminConnexion) {
+    if (adminConnexion) {
 
     let adminHeader = document.querySelector('.admin-header');
     adminHeader.setAttribute('style', 'display: flex');

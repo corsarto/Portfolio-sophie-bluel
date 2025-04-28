@@ -1,8 +1,7 @@
-
 let allProjects = []; 
 let url = 'http://localhost:5678/api/';
 
-async function fetchWorks() {
+export async function fetchWorks() {
     try {
         const response = await fetch( url + 'works');
         if (!response.ok) {
@@ -62,18 +61,19 @@ function containerFilter(categories) {
     filterAll.classList.add("filter-button", "button-all");
     filterAll.setAttribute("data-id", "all");
     filterContainer.appendChild(filterAll);
-
+    
     for (let i = 0; i < categories.length; i++) {
         const category = categories[i];
-        
+
         const filter = document.createElement("button");
         filter.innerText = category.name;
         filter.setAttribute("data-id", category.id);
         filter.classList.add("filter-button", "button" + category.id);
         filterContainer.appendChild(filter);
 
+        
         filter.addEventListener("click", () => {
-            filterProjects(category.id); 
+            filterProjects(category.id);
         });
     }
 
@@ -81,6 +81,7 @@ function containerFilter(categories) {
         filterProjects("all");
     });
 }
+
 
 function filterProjects(categoryId) {
     let filteredProjects;
