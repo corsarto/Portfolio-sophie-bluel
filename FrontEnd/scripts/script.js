@@ -9,7 +9,6 @@ export async function fetchWorks() {
         }
         allProjects = await response.json(); 
         
-
         containerGallery(allProjects);  
     } catch (error) {
         console.error("Erreur : ", error);
@@ -36,7 +35,6 @@ function containerGallery(data) {
         gallery.appendChild(figure);
     }
 }
-
 async function fetchCategories() {
     try {
         const response = await fetch(url + 'categories');
@@ -71,17 +69,14 @@ function containerFilter(categories) {
         filter.classList.add("filter-button", "button" + category.id);
         filterContainer.appendChild(filter);
 
-        
         filter.addEventListener("click", () => {
             filterProjects(category.id);
         });
     }
-
     filterAll.addEventListener("click", () => {
         filterProjects("all");
     });
 }
-
 
 function filterProjects(categoryId) {
     let filteredProjects;
@@ -93,7 +88,6 @@ function filterProjects(categoryId) {
         
         filteredProjects = allProjects.filter(project => project.category.id === parseInt(categoryId));
     }
-
     containerGallery(filteredProjects);
 }
 

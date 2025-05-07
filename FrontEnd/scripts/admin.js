@@ -140,44 +140,8 @@ function containerModal(data) {
         pictureGallery.appendChild(figure);
         }}
 
-function addProjectInGallery(projet) {
-    const gallery = document.querySelector(".gallery"); 
-    const figure = document.createElement("figure");
-        
-    const img = document.createElement("img");
-    img.src = projet.imageUrl;
-    img.alt = projet.title;
-        
-    const figcaption = document.createElement("figcaption");
-    figcaption.textContent = projet.title;
-        
-    figure.appendChild(img);
-    figure.appendChild(figcaption);
-    gallery.appendChild(figure);
-}
-
-function addProjectInModal(projet) {
-    const pictureGallery = document.querySelector('.modal-gallery');
-    const figure = document.createElement("figure");
-    figure.classList.add("image-wrapper");
-        
-    const img = document.createElement("img");
-    img.src = projet.imageUrl;
-    img.alt = projet.title;
-        
-    const trashIcon = document.createElement('i');
-    trashIcon.classList.add('fas', 'fa-trash-can', 'icon-overlay');
-    trashIcon.setAttribute('aria-hidden', 'false');
-    trashIcon.dataset.id = projet.id;
-        
-    trashIcon.addEventListener('click', deleteProject);
-        
-    figure.appendChild(img);
-    figure.appendChild(trashIcon);
-    pictureGallery.appendChild(figure);
-}
-
 async function deleteProject(event) {
+    event.preventDefault();
     const id = event.target.dataset.id;
     const token = localStorage.getItem("token");
     
@@ -205,8 +169,8 @@ async function deleteProject(event) {
                     throw new Error("Erreur pendant la suppression du projet.");
                 }
             
-                    fetchWorks();
-                    fetchWorksModalContent();
+                fetchWorks();
+                fetchWorksModalContent();
                    
                 }catch(error) {
             console.log("Erreur : ", error);
@@ -355,10 +319,12 @@ async function sendNewPicture(event) {
     }
 
     const newProject = await response.json();
-    console.log("Projet ajouté avec succès", newProject);
-    closeModal(event);
-    addProjectInGallery(newProject);
-    addProjectInModal(newProject);
+    console.log("Nouveau projet ajouté : ", newProject);
+    
+    fetchWorks();              
+    fetchWorksModalContent();
+    closeModal(event);  
+
     errorMessage.style.display = "none";
     errorMessage.textContent = "";
             
